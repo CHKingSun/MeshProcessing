@@ -44,21 +44,21 @@ public:
 //        std::cout<<dir<<"\t"<<filename<<std::endl;
         type = filename.substr(filename.find_last_of('.')+1, filename.size());
 
-		//max_bound = to_vec3(scene->mMeshes[scene->mRootNode->mMeshes[0]]->mVertices[0]);
-		//min_bound = to_vec3(scene->mMeshes[scene->mRootNode->mMeshes[0]]->mVertices[0]);
+        //max_bound = to_vec3(scene->mMeshes[scene->mRootNode->mMeshes[0]]->mVertices[0]);
+        //min_bound = to_vec3(scene->mMeshes[scene->mRootNode->mMeshes[0]]->mVertices[0]);
 
-		max_bound = glm::vec3(1 < 32, 1 < 32, 1 < 32);
-		min_bound = -max_bound;
+        max_bound = glm::vec3(1 < 32, 1 < 32, 1 < 32);
+        min_bound = -max_bound;
 
         deal_node(scene->mRootNode, scene);
 
-		center = -(max_bound + min_bound) / float(2);
-		glm::vec3 c = max_bound - min_bound;
-		scale = c.x > c.y ? c.x : c.y;
-		//scale = scale > c.z ? scale : c.z;
-		scale = 1.5 / scale;
-		transform = glm::scale(transform, glm::vec3(scale, scale, scale));
-		transform = glm::translate(transform, center);
+        center = -(max_bound + min_bound) / float(2);
+        glm::vec3 c = max_bound - min_bound;
+        scale = c.x > c.y ? c.x : c.y;
+        //scale = scale > c.z ? scale : c.z;
+        scale = 1.5 / scale;
+        transform = glm::scale(transform, glm::vec3(scale, scale, scale));
+        transform = glm::translate(transform, center);
     }
 
     bool is_valid(){ return !meshes.empty(); }
@@ -73,12 +73,12 @@ public:
         glUniformMatrix4fv(glGetUniformLocation(program, "u_transform"), 1, GL_FALSE, &transform[0][0]);
         for(auto &m : meshes)
         {
-			if (tex) {
-				m.load_textures(program);
-			}
-			else {
-				m.disable_textures(program);
-			}
+            if (tex) {
+                m.load_textures(program);
+            }
+            else {
+                m.disable_textures(program);
+            }
             m.render(program);
         }
     }
@@ -92,10 +92,10 @@ public:
         return glm::vec3(v.r, v.g, v.b);
     }
 
-	glm::vec3 to_vec3(aiVector3D v)
-	{
-		return glm::vec3(v.x, v.y, v.z);
-	}
+    glm::vec3 to_vec3(aiVector3D v)
+    {
+        return glm::vec3(v.x, v.y, v.z);
+    }
 
     glm::vec2 to_vec2(aiVector3D v)
     {
@@ -200,9 +200,9 @@ protected:
         mat->Get(AI_MATKEY_COLOR_AMBIENT, color);
         if(color != aiColor3D()) material.ambient = to_vec3(color);
         mat->Get(AI_MATKEY_COLOR_DIFFUSE, color);
-		if (color != aiColor3D()) material.diffuse = to_vec3(color);
+        if (color != aiColor3D()) material.diffuse = to_vec3(color);
         mat->Get(AI_MATKEY_COLOR_SPECULAR, color);
-		if (color != aiColor3D()) material.specular = to_vec3(color);
+        if (color != aiColor3D()) material.specular = to_vec3(color);
         mat->Get(AI_MATKEY_SHININESS, material.shininess);
         mat->Get(AI_MATKEY_OPACITY, material.alpha);
 
@@ -220,11 +220,12 @@ protected:
             mat->GetTexture(type, i, &path, NULL, NULL, &blend, NULL, NULL);
 
             bool flag = true;
+            std::string p = dir + path.C_Str();
             for(auto t : textures)
             {
-                if(t.path == path.C_Str())
+                if(t.path == p)
                 {
-					textures.emplace_back(t);
+                    textures.emplace_back(t);
                     flag = false;
                     break;
                 }
@@ -244,9 +245,9 @@ protected:
                         texture.type = TextureType::SPECULAR;
                         break;
                 }
-                texture.path = path.C_Str();
+                texture.path = p;
                 texture.blend = blend;
-                texture.id = load_texture(dir+texture.path);
+                texture.id = load_texture(texture.path);
                 textures.emplace_back(texture);
             }
         }

@@ -25,12 +25,10 @@ void main() {
     vec3 diffuse = vec3(0.0, 0.0, 0.0);
     vec3 specular = vec3(0.0, 0.0, 0.0);
 
-    bool flag = false;
     for(int i = 0; i < MAX_TEXTURES; ++i)
     {
         if(u_textures[i].enable)
         {
-            flag = true;
             vec3 tex_color = texture2D(u_textures[i].texture, v_texcoord).rgb * u_textures[i].blend;
             if(u_textures[i].type == 0)
             {
@@ -45,16 +43,13 @@ void main() {
         }
     }
 
-    if(flag){
-        ambient *= v_ambient;
-        diffuse *= v_diffuse;
-        specular *= v_specular;
-    } else
-    {
-        ambient = v_ambient;
-        diffuse = v_diffuse;
-        specular = v_specular;
-    }
+    if(ambient == vec3(0.0, 0.0, 0.0)) ambient = vec3(1.0, 1.0, 1.0);
+    if(diffuse == vec3(0.0, 0.0, 0.0)) diffuse = vec3(1.0, 1.0, 1.0);
+    if(specular == vec3(0.0, 0.0, 0.0)) specular = vec3(1.0, 1.0, 1.0);
+
+    ambient *= v_ambient;
+    diffuse *= v_diffuse;
+    specular *= v_specular;
 
     gl_FragColor = vec4((ambient + diffuse + specular), u_alpha);
 //    gl_FragColor = vec4((v_ambient + v_diffuse + v_specular), u_alpha);
