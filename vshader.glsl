@@ -42,12 +42,14 @@ light get_color(light l)
     float cosT = clamp(dot(N, L), 0.0, 1.0);
     float cosA = clamp(dot(N, normalize(E+L)), 0.0, 1.0);
 
-    light res;
-    res.ambient = u_ambient * l.ambient;
-    res.diffuse = u_diffuse * l.diffuse * cosT / dis;
-    res.specular = u_specular * l.specular * pow(cosA, u_shininess) / dis;
+//    light res;
+//    res.ambient = u_ambient * l.ambient;
+//    res.diffuse = u_diffuse * l.diffuse * cosT / dis;
+//    res.specular = u_specular * l.specular * pow(cosA, u_shininess) / dis;
+    l.diffuse *= cosT / dis;
+    l.specular *= pow(cosA, u_shininess) / dis;
 
-    return res;
+    return l;
 }
 
 void main() {
@@ -66,14 +68,19 @@ void main() {
             specular += res.specular;
         }
     }
-    v_texcoord = a_texcoord;
+
+    v_ambient = u_ambient;
+    v_diffuse = u_diffuse;
+    v_specular = u_specular;
+
+//    if(v_ambient == vec3(0.0, 0.0, 0.0)) v_ambient = vec3(0.2, 0.2, 0.2);
+//    if(v_diffuse == vec3(0.0, 0.0, 0.0)) v_diffuse = vec3(0.8, 0.8, 0.8);
+//    if(v_specular == vec3(0.0, 0.0, 0.0)) v_specular = vec3(1.0, 1.0, 1.0);
+
     if(flag){
-        v_ambient = ambient;
-        v_diffuse = diffuse;
-        v_specular = specular;
-    } else{
-        v_ambient = u_ambient;
-        v_diffuse = u_diffuse;
-        v_specular = u_specular;
+        v_ambient *= ambient;
+        v_diffuse *= diffuse;
+        v_specular *= specular;
     }
+    v_texcoord = a_texcoord;
 }

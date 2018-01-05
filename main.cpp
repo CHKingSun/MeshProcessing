@@ -18,7 +18,7 @@
 const std::string vs_filename = "../vshader.glsl";
 const std::string fs_filename = "../fshader.glsl";
 //const std::string filename = "../res/nano/nanosuit2.obj";
-const std::string filename = "../res/20.obj";
+const std::string filename = "../res/sphere48.obj";
 
 Shader shader;
 Model model;
@@ -26,7 +26,8 @@ Model model;
 GLuint swidth = 720, sheight = 540;
 
 bool k_blend = false;
-bool k_texture = false;
+bool k_texture = true;
+bool k_light = false;
 int k_mode = 0;
 
 glm::mat4 translate, rotate, scale;
@@ -113,6 +114,10 @@ void onKeyBoard(unsigned char key, int x, int y)
     case 'T':
 		k_texture = !k_texture;
 		break;
+    case 'l':
+    case 'L':
+        k_light = !k_light;
+            break;
     case 'm':
     case 'M':
 		k_mode = (++k_mode) % 3;
@@ -126,6 +131,12 @@ void onKeyBoard(unsigned char key, int x, int y)
 	{
 		glDisable(GL_BLEND);
 	}
+    if(k_light){
+        shader.enable_light();
+    } else
+    {
+        shader.disable_light();
+    }
 	if (k_mode == 0)
 	{
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -153,7 +164,10 @@ void initGL()
 	glClearColor(0.17, 0.17, 0.17, 1.0);
 	glShadeModel(GL_SMOOTH);
 	glEnable(GL_DEPTH_TEST);
-	//    glEnable(GL_BLEND);
+    if (k_blend)
+    {
+        glEnable(GL_BLEND);
+    }
 	//    glEnable(GL_LIGHTING);
 	//    glDisable(GL_TEXTURE);
 
@@ -202,7 +216,11 @@ int main(int argc, char *argv[])
 	}
 
 	shader.init_light();
-	shader.load_lights();
+    shader.load_lights();
+    if(k_light)
+    {
+        shader.enable_light();
+    }
 
 	glutMainLoop();
 

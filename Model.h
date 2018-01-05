@@ -74,7 +74,7 @@ public:
         for(auto &m : meshes)
         {
             if (tex) {
-                m.load_textures(program);
+                m.enable_textures(program);
             }
             else {
                 m.disable_textures(program);
@@ -143,6 +143,8 @@ protected:
         Material material;
         std::vector<Texture> textures;
 
+        bool has_textcoord = mesh->mTextureCoords[0] != NULL;
+
         for(int i = 0; i < mesh->mNumVertices; ++i)
         {
             Vertex vertex;
@@ -153,12 +155,11 @@ protected:
             max_bound = maximized(max_bound, vertex.position);
             min_bound = minimized(min_bound, vertex.position);
 
-            if(mesh->HasTextureCoords(i))
+            if(has_textcoord)
             {
-                glm::vec2 t;
-
-                t.x = mesh->mTextureCoords[0][i].x;
-                t.y = mesh->mTextureCoords[0][i].y;
+                //glm::vec2 t;
+                //t.x = mesh->mTextureCoords[0][i].x;
+                //t.y = mesh->mTextureCoords[0][i].y;
 
                 vertex.texcoord = to_vec2(mesh->mTextureCoords[0][i]);
             }

@@ -120,6 +120,22 @@ public:
         }
     }
 
+    void enable_light()
+    {
+        for(int i = 0; i < n_light; ++i)
+        {
+            glUniform1i(glGetUniformLocation(program, ("u_lights[" + std::to_string(i) + "].enable").data()), true);
+        }
+    }
+
+    void disable_light()
+    {
+        for(int i = 0; i < n_light; ++i)
+        {
+            glUniform1i(glGetUniformLocation(program, ("u_lights[" + std::to_string(i) + "].enable").data()), false);
+        }
+    }
+
 protected:
     void add_shader(GLuint program, const std::string text, GLenum type)
     {

@@ -82,18 +82,21 @@ public:
 		//GLuint program = shader.program;
 
         load_material(program);
-        //load_textures(program);
+        load_textures(program);
 
         GLuint a_position = glGetAttribLocation(program, "a_position");
         GLuint a_normal = glGetAttribLocation(program, "a_normal");
+        GLuint a_texcoord = glGetAttribLocation(program, "a_texcoord");
 
 		glBindBuffer(GL_ARRAY_BUFFER, VBO);
         glEnableVertexAttribArray(a_position);
         glVertexAttribPointer(a_position, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position));
         glEnableVertexAttribArray(a_normal);
         glVertexAttribPointer(a_normal, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normal));
-       
-		//std::cout<<sizeof(Vertex)<<"\t" << offsetof(Vertex, position) << "\t" 
+        glEnableVertexAttribArray(a_texcoord);
+        glVertexAttribPointer(a_texcoord, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texcoord));
+
+        //std::cout<<sizeof(Vertex)<<"\t" << offsetof(Vertex, position) << "\t"
 		//	<< offsetof(Vertex, normal) << "\t"<< offsetof(Vertex, texcoord) << std::endl;
 
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
@@ -101,28 +104,17 @@ public:
 
         glDisableVertexAttribArray(a_position);
         glDisableVertexAttribArray(a_normal);
-        glDisableVertexAttribArray(glGetAttribLocation(program, "a_texcoord"));
+        glDisableVertexAttribArray(a_texcoord);
     }
 
-	void load_textures(GLuint program)
-	{
-		GLuint a_texcoord = glGetAttribLocation(program, "a_texcoord");
-		glEnableVertexAttribArray(a_texcoord);
-		glVertexAttribPointer(a_texcoord, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texcoord));
-
-		auto it = textures.begin();
-		for (int i = 0; i < textures.size(); ++i, ++it)
-		{
-			std::string u_textures = "u_textures[" + std::to_string(i) + "]";
-			glUniform1i(glGetUniformLocation(program, (u_textures + ".enable").data()), true);
-			glUniform1f(glGetUniformLocation(program, (u_textures + ".blend").data()), (*it).blend);
-			glUniform1i(glGetUniformLocation(program, (u_textures + ".type").data()), (*it).type);
-
-			glActiveTexture(GL_TEXTURE0+i);
-			glUniform1i(glGetUniformLocation(program, (u_textures + ".texture").data()), i);
-            glBindTexture(GL_TEXTURE_2D, (*it).id);
-		}
-	}
+    void enable_textures(GLuint program)
+    {
+        auto it = textures.begin();
+        for (int i = 0; i < textures.size(); ++i, ++it)
+        {
+            glUniform1i(glGetUniformLocation(program, ("u_textures[" + std::to_string(i) + "].enable").data()), true);
+        }
+    }
 
 	void disable_textures(GLuint program) 
 	{
@@ -152,6 +144,21 @@ protected:
         glUniform3fv(glGetUniformLocation(program, "u_specular"), 1, &material.specular[0]);
         glUniform1f(glGetUniformLocation(program, "u_shininess"), material.shininess);
         glUniform1f(glGetUniformLocation(program, "u_alpha"), material.alpha);
+    }
+
+    void load_textures(GLuint program)
+    {
+        auto it = textures.begin();
+        for (int i = 0; i < textures.size(); ++i, ++it)
+        {
+            std::string u_textures = "u_textures[" + std::to_string(i) + "]";
+            glUniform1f(glGetUniformLocation(program, (u_textures + ".blend").data()), (*it).blend);
+            glUniform1i(glGetUniformLocation(program, (u_textures + ".type").data()), (*it).type);
+
+            glActiveTexture(GL_TEXTURE0+i);
+            glUniform1i(glGetUniformLocation(program, (u_textures + ".texture").data()), GL_TEXTURE0+i);
+            glBindTexture(GL_TEXTURE_2D, (*it).id);
+        }
     }
 
 private:

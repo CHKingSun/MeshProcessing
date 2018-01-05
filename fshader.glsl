@@ -43,9 +43,9 @@ void main() {
         }
     }
 
-    if(ambient == vec3(0.0, 0.0, 0.0)) ambient = vec3(1.0, 1.0, 1.0);
-    if(diffuse == vec3(0.0, 0.0, 0.0)) diffuse = vec3(1.0, 1.0, 1.0);
-    if(specular == vec3(0.0, 0.0, 0.0)) specular = vec3(1.0, 1.0, 1.0);
+    if(ambient == vec3(0.0, 0.0, 0.0)) ambient = vec3(0.2, 0.2, 0.2);
+    if(diffuse == vec3(0.0, 0.0, 0.0)) diffuse = vec3(0.8, 0.8, 0.8);
+//    if(specular == vec3(0.0, 0.0, 0.0)) specular = vec3(1.0, 1.0, 1.0);
 
     ambient *= v_ambient;
     diffuse *= v_diffuse;
