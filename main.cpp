@@ -17,8 +17,9 @@
 
 const std::string vs_filename = "../vshader.glsl";
 const std::string fs_filename = "../fshader.glsl";
-//const std::string filename = "../res/nano/nanosuit2.obj";
-const std::string filename = "../res/sphere48.obj";
+const std::string filename = "../res/nano/nanosuit2.obj";
+//const std::string filename = "../res/glass.obj";
+//const std::string filename = "../res/cube.off";
 
 Shader shader;
 Model model;
@@ -30,7 +31,7 @@ bool k_texture = true;
 bool k_light = false;
 int k_mode = 0;
 
-glm::mat4 translate, rotate, scale;
+glm::mat4 translate, rotate, scale, view;
 
 int rx, ry;
 
@@ -38,6 +39,7 @@ void myDisplay()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	glUniformMatrix4fv(glGetUniformLocation(shader.program, "u_view"), 1, GL_FALSE, &view[0][0]);
 	glUniformMatrix4fv(glGetUniformLocation(shader.program, "u_rotate"), 1, GL_FALSE, &rotate[0][0]);
 	glUniformMatrix4fv(glGetUniformLocation(shader.program, "u_scale"), 1, GL_FALSE, &scale[0][0]);
 
@@ -52,7 +54,7 @@ void save()
 	GLubyte *data = new GLubyte[swidth*sheight * 3];
 	glGetIntegerv(GL_VIEWPORT, viewport);
 	glReadPixels(viewport[0], viewport[1], viewport[2], viewport[3], GL_RGB, GL_UNSIGNED_BYTE, data);
-	if (stbi_write_png("./res/result.png", swidth, sheight, 3, data, 0))
+	if (stbi_write_png("../res/result.png", swidth, sheight, 3, data, 0))
 	{
 		std::cout << "Save successfully." << std::endl;
 	}
@@ -157,6 +159,10 @@ void reshape(int width, int height)
 	swidth = width;
 	sheight = height;
 	glViewport(0, 0, swidth, sheight);
+    GLfloat s = GLfloat(swidth)/sheight;
+    scale = glm::scale(glm::mat4(), glm::vec3(1.0, s, 1.0));
+//    view = glm::perspective((GLfloat)60.0, s, (GLfloat)0.1, (GLfloat)100.0);
+//	view *= glm::lookAt(glm::vec3(2.0, 0.0, 0.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
 }
 
 void initGL()
@@ -171,8 +177,8 @@ void initGL()
 	//    glEnable(GL_LIGHTING);
 	//    glDisable(GL_TEXTURE);
 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
     glDepthFunc(GL_LEQUAL);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -191,7 +197,7 @@ void initGL()
 int main(int argc, char *argv[])
 {
 	glutInit(&argc, argv);
-	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA);
+	glutInitDisplayMode(GLUT_DOUBLE|GLUT_RGBA|GLUT_DEPTH);
 	glutInitWindowSize(swidth, sheight);
 	glutInitWindowPosition(60, 60);
 	glutCreateWindow("Graphics");

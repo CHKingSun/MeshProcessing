@@ -7,7 +7,7 @@ struct texture{
     sampler2D  texture;
 };
 
-const int MAX_TEXTURES = 4;
+const int MAX_TEXTURES = 6;
 
 uniform texture u_textures[MAX_TEXTURES];
 uniform float u_alpha;
@@ -21,15 +21,17 @@ varying vec3 v_ambient, v_diffuse, v_specular;
 //}
 
 void main() {
-    vec3 ambient = vec3(0.0, 0.0, 0.0);
-    vec3 diffuse = vec3(0.0, 0.0, 0.0);
-    vec3 specular = vec3(0.0, 0.0, 0.0);
+    vec4 ambient = vec4(0.0, 0.0, 0.0, 0.0);
+    vec4 diffuse = vec4(0.0, 0.0, 0.0, 0.0);
+    vec4 specular = vec4(0.0, 0.0, 0.0, 0.0);
 
+    bool flag = false;
     for(int i = 0; i < MAX_TEXTURES; ++i)
     {
         if(u_textures[i].enable)
         {
-            vec3 tex_color = texture2D(u_textures[i].texture, v_texcoord).rgb * u_textures[i].blend;
+            flag = true;
+            vec4 tex_color = texture2D(u_textures[i].texture, v_texcoord) * u_textures[i].blend;
             if(u_textures[i].type == 0)
             {
                 ambient += tex_color;
@@ -43,14 +45,18 @@ void main() {
         }
     }
 
-    if(ambient == vec3(0.0, 0.0, 0.0)) ambient = vec3(0.2, 0.2, 0.2);
-    if(diffuse == vec3(0.0, 0.0, 0.0)) diffuse = vec3(0.8, 0.8, 0.8);
-//    if(specular == vec3(0.0, 0.0, 0.0)) specular = vec3(1.0, 1.0, 1.0);
+    if(flag)
+    {
+        ambient *= vec4(v_ambient, u_alpha);
+        diffuse *= vec4(v_diffuse, u_alpha);
+        specular *= vec4(v_specular, u_alpha);
+    }else
+    {
+        ambient = vec4(v_ambient, u_alpha);
+        diffuse = vec4(v_diffuse, u_alpha);
+        specular = vec4(v_specular, u_alpha);
+    }
 
-    ambient *= v_ambient;
-    diffuse *= v_diffuse;
-    specular *= v_specular;
-
-    gl_FragColor = vec4((ambient + diffuse + specular), u_alpha);
+    gl_FragColor = ambient + diffuse + specular;
 //    gl_FragColor = vec4((v_ambient + v_diffuse + v_specular), u_alpha);
 }

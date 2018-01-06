@@ -15,6 +15,8 @@
 #include <vec3.hpp>
 #include <mat4x4.hpp>
 
+//TODO Light wrong!
+
 struct Light{
     Light(){
 		position = glm::vec4(0.0, 0.0, 0.0, 0.0);
@@ -99,11 +101,11 @@ public:
 		Light light;
 		light.position = glm::vec4(1.0, 1.0, 0.0, 0.0);
 		add_light(light);
-		light.position = glm::vec4(0.0, 1.0, 1.0, 1.0);
+		light.position = glm::vec4(0.0, 1.0, 1.0, 0.0);
 		add_light(light);
-		light.position = glm::vec4(-1.0, 1.0, 0.0, 1.0);
+		light.position = glm::vec4(-1.0, 1.0, 0.0, 0.0);
 		add_light(light);
-		light.position = glm::vec4(0.0, 1.0, -1.0, 1.0);
+		light.position = glm::vec4(0.0, 1.0, -1.0, 0.0);
 		add_light(light);
     }
 
@@ -112,7 +114,6 @@ public:
         for(int i = 0; i < n_light; ++i)
         {
             std::string u_light = "u_lights[" + std::to_string(i) + "]";
-            glUniform1i(glGetUniformLocation(program, (u_light+".enable").data()), true);
             glUniform4fv(glGetUniformLocation(program, (u_light+".position").data()), 1, &lights[i].position[0]);
             glUniform3fv(glGetUniformLocation(program, (u_light+".ambient").data()), 1, &lights[i].ambient[0]);
             glUniform3fv(glGetUniformLocation(program, (u_light+".diffuse").data()), 1, &lights[i].diffuse[0]);
