@@ -15,8 +15,6 @@
 #include <vec3.hpp>
 #include <mat4x4.hpp>
 
-//TODO Light wrong!
-
 struct Light{
     Light(){
 		position = glm::vec4(0.0, 0.0, 0.0, 0.0);
@@ -101,7 +99,7 @@ public:
 		Light light;
 		light.position = glm::vec4(1.0, 1.0, 0.0, 0.0);
 		add_light(light);
-		light.position = glm::vec4(0.0, 1.0, 1.0, 0.0);
+		light.position = glm::vec4(0.0, 1.0, 1.0, 1.0);
 		add_light(light);
 		light.position = glm::vec4(-1.0, 1.0, 0.0, 0.0);
 		add_light(light);

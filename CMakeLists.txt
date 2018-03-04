@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.9)
-project(Assimp)
+project(MeshProcessing)
 
 set(CMAKE_CXX_STANDARD 11)
 
@@ -16,5 +16,5 @@ include_directories(D:/glm/glm)
 
 add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 
-add_executable(Assimp main.cpp Model.h Mesh.h Shader.h)
-target_link_libraries(Assimp assimp freeglut glew32)
+add_executable(${PROJECT_NAME} main.cpp Model.h Mesh.h Shader.h)
+target_link_libraries(${PROJECT_NAME} assimp freeglut glew32)

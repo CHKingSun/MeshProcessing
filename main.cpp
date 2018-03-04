@@ -15,20 +15,24 @@
 #include "Shader.h"
 #include "Model.h"
 
-const std::string vs_filename = "../vshader.glsl";
-const std::string fs_filename = "../fshader.glsl";
-const std::string filename = "../res/nano/nanosuit2.obj";
-//const std::string filename = "../res/glass.obj";
-//const std::string filename = "../res/cube.off";
+const std::string dir = "./";
+const std::string vs_filename = dir + "vshader.glsl";
+const std::string fs_filename = dir + "fshader.glsl";
+const std::string filename = dir + "res/nano/nanosuit2.obj";
+//const std::string filename = dir + "res/glass.obj";
+//const std::string filename = dir + "res/wind/tex/wmill(formats).obj";
+//const std::string filename = dir + "res/cellrain.obj";
+//const std::string filename = dir + "res/moon/moon.obj";
 
 Shader shader;
+Model ground;
 Model model;
 
 GLuint swidth = 720, sheight = 540;
 
 bool k_blend = false;
 bool k_texture = true;
-bool k_light = false;
+bool k_light = true;
 int k_mode = 0;
 
 glm::mat4 translate, rotate, scale, view;
@@ -43,6 +47,7 @@ void myDisplay()
 	glUniformMatrix4fv(glGetUniformLocation(shader.program, "u_rotate"), 1, GL_FALSE, &rotate[0][0]);
 	glUniformMatrix4fv(glGetUniformLocation(shader.program, "u_scale"), 1, GL_FALSE, &scale[0][0]);
 
+//    ground.render(shader, true);
 	model.render(shader, k_texture);
 
 	glutSwapBuffers();
@@ -54,7 +59,7 @@ void save()
 	GLubyte *data = new GLubyte[swidth*sheight * 3];
 	glGetIntegerv(GL_VIEWPORT, viewport);
 	glReadPixels(viewport[0], viewport[1], viewport[2], viewport[3], GL_RGB, GL_UNSIGNED_BYTE, data);
-	if (stbi_write_png("../res/result.png", swidth, sheight, 3, data, 0))
+	if (stbi_write_png((dir + "res/result.png").data(), swidth, sheight, 3, data, 0))
 	{
 		std::cout << "Save successfully." << std::endl;
 	}
@@ -161,8 +166,9 @@ void reshape(int width, int height)
 	glViewport(0, 0, swidth, sheight);
     GLfloat s = GLfloat(swidth)/sheight;
     scale = glm::scale(glm::mat4(), glm::vec3(1.0, s, 1.0));
-//    view = glm::perspective((GLfloat)60.0, s, (GLfloat)0.1, (GLfloat)100.0);
-//	view *= glm::lookAt(glm::vec3(2.0, 0.0, 0.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
+	GLfloat ortho = 1.0;
+    view = glm::ortho(-ortho, ortho, -ortho, ortho, (GLfloat)-6.0, (GLfloat)6.0);
+	view *= glm::lookAt(glm::vec3(0.0, 0.0, 1.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
 }
 
 void initGL()
@@ -216,7 +222,7 @@ int main(int argc, char *argv[])
 //	std::string filename;
 //	std::cin >> filename;
 
-	if (!shader.compile_shader(vs_filename, fs_filename) || !model.open_file(filename))
+	if (!shader.compile_shader(vs_filename, fs_filename) || !model.open_file(filename) || !ground.open_file(dir + "res/ground.obj"))
 	{
 		exit(EXIT_FAILURE);
 	}

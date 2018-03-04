@@ -27,7 +27,7 @@ varying vec3 v_ambient, v_diffuse, v_specular;
 
 light get_color(light l)
 {
-    mat4 V = u_view * u_scale * u_rotate * u_transform;
+    mat4 V = u_scale * u_rotate * u_transform;
     vec3 p = gl_Position.xyz;
     vec3 L = l.position.xyz - p; //light position - point true position
     vec3 E = vec3(0.0, 0.0, 1.0) - p; //eye position - point position
@@ -39,16 +39,13 @@ light get_color(light l)
     }
     L = normalize(L);
     E = normalize(E);
-    vec3 N = normalize((V * vec4(a_normal, 1.0)).xyz);
+    vec3 N = normalize((V * vec4(a_normal, 0.0)).xyz);
     float cosT = clamp(dot(N, L), 0.0, 1.0);
     float cosA = clamp(dot(N, normalize(E+L)), 0.0, 1.0);
 
-//    light res;
-//    res.ambient = u_ambient * l.ambient;
-//    res.diffuse = u_diffuse * l.diffuse * cosT / dis;
-//    res.specular = u_specular * l.specular * pow(cosA, u_shininess) / dis;
     l.diffuse *= cosT / dis;
-    l.specular *= pow(cosA, u_shininess) / dis;
+    if(cosT > 0) l.specular *= pow(cosA, u_shininess) / dis;
+    else l.specular = vec3(0.0, 0.0, 0.0);
 
     return l;
 }
@@ -82,11 +79,12 @@ void main() {
         v_ambient *= ambient;
         v_diffuse *= diffuse;
         v_specular *= specular;
-    }else
-    {
-        v_ambient = vec3(0.2, 0.2, 0.2);
-        v_diffuse = vec3(0.6, 0.6, 0.6);
-        v_specular = vec3(0.0, 0.0, 0.0);
     }
+//    else
+//    {
+//        v_ambient = vec3(0.0, 0.0, 0.0);
+//        v_diffuse = u_diffuse;
+//        v_specular = vec3(0.0, 0.0, 0.0);
+//    }
     v_texcoord = a_texcoord;
 }
